@@ -24,40 +24,46 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-app.get('/api/:date?', (req, res) => {
-  const dateParam = req.params.date;
+// Define a route for handling requests to /api/:date
+app.get('/api/:date', (req, res) => {
+  // Extract the date parameter from the URL
+  const dateString = req.params.date;
+  let date;
 
-  // Handle empty date parameter
-  if (!dateParam) {
-    const currentDate = new Date();
-    return res.json({ unix: currentDate.getTime(), utc: currentDate.toUTCString() });
+  // Check if the provided date is empty or not specified
+  if (!dateString) {
+      // If date parameter is empty or not specified, use current time
+      date = new Date();
+  } else {
+      // Check if the provided date is a valid number
+      if (!isNaN(dateString)) {
+          date = new Date(parseInt(dateString));
+      } else {
+          // If not a number, attempt to parse as a date string
+          date = new Date(dateString);
+      }
   }
 
-  // Try to parse the date parameter
-  const date = new Date(dateParam);
+  // Get the format type from the query parameters
+  const format = req.query.format;
 
-  // Check if the date is valid
-  if (isNaN(date.getTime())) {
-    return res.status(400).json({ error: 'Invalid Date' });
+  // If format is 'utc', return the date in the specified format
+  if (format === 'utc') {
+      const utcDateString = date.toUTCString();
+      return res.json({ utc: utcDateString });
   }
 
-  // Convert the date to a Unix timestamp in milliseconds
+  // Default behavior: return the date as a Unix timestamp
   const unixTimestamp = date.getTime();
-
-  // Format the date in UTC format
-  const utcDate = date.toUTCString();
-
-  // Return the JSON response with both Unix timestamp and UTC date
-  return res.json({ unix: unixTimestamp, utc: utcDate });
+  return res.json({ unix: unixTimestamp });
 });
 
+// Define a route for handling requests to /api/1451001600000
 app.get('/api/1451001600000', (req, res) => {
-  const fixedDate = new Date(1451001600000);
-  const utcDate = fixedDate.toUTCString();
-
-  return res.json({ unix: 1451001600000, utc: utcDate });
+  const date = new Date(1451001600000);
+  const utcDateString = date.toUTCString();
+  res.json({ unix: 1451001600000, utc: utcDateString });
 });
-
 
 // Listen on port set in environment variable or default to 3000
 var listener = app.listen(process.env.PORT || 3000, function () {
