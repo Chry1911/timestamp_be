@@ -44,18 +44,11 @@ app.get('/api/:date', (req, res) => {
       }
   }
 
-  // Get the format type from the query parameters
-  const format = req.query.format;
-
-  // If format is 'utc', return the date in the specified format
-  if (format === 'utc') {
-      const utcDateString = date.toUTCString();
-      return res.json({ utc: utcDateString });
-  }
-
+  
   // Default behavior: return the date as a Unix timestamp
   const unixTimestamp = date.getTime();
-  return res.json({ unix: unixTimestamp });
+  const utcDateString = date.toUTCString();
+  return res.json({ unix: unixTimestamp, utc: utcDateString});
 });
 
 // Define a route for handling requests to /api/1451001600000
