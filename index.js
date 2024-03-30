@@ -45,9 +45,24 @@ app.get('/api/:date', (req, res) => {
   }
 
   
+  const utcDateString = date.toUTCString();
+     
   // Default behavior: return the date as a Unix timestamp
   const unixTimestamp = date.getTime();
+  return res.json({ unix: unixTimestamp, utc: utcDateString});
+});
+
+// Define a route for handling requests to /api/:date
+app.get('/api/', (req, res) => {
+  // Extract the date parameter from the URL
+
+  const date = new Date();
+
+  
   const utcDateString = date.toUTCString();
+     
+  // Default behavior: return the date as a Unix timestamp
+  const unixTimestamp = date.getTime();
   return res.json({ unix: unixTimestamp, utc: utcDateString});
 });
 
